@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 import qrcode
 from PIL import Image
+import os
 
 def generate_qr_with_logo(url, logo_path, qr_output_path):
     qr = qrcode.QRCode(
@@ -30,10 +31,10 @@ def generate_qr_with_logo(url, logo_path, qr_output_path):
 def gui():
     root = tk.Tk()
     root.title("QR Code Generator")
-
-    def browse_logo():
-        file_path = filedialog.askopenfilename()
-        logo_path_var.set(file_path)
+    root.configure(bg="white")
+    root.geometry("+30+30")
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_columnconfigure(2, weight=1)
 
     def browse_output():
         file_path = filedialog.asksaveasfilename(defaultextension=".png")
@@ -41,7 +42,7 @@ def gui():
 
     def generate_qr():
         url = url_var.get()
-        logo_path = logo_path_var.get()
+        logo_path = os.path.join(os.path.dirname(__file__), 'logo.png')
         output_path = output_path_var.get()
 
         if url and logo_path and output_path:
@@ -52,20 +53,25 @@ def gui():
 
     # Create input fields and buttons
     url_var = tk.StringVar()
-    logo_path_var = tk.StringVar()
     output_path_var = tk.StringVar()
     status_var = tk.StringVar()
 
-    tk.Label(root, text="URL:").grid(row=0, column=0, sticky="e")
-    tk.Entry(root, textvariable=url_var, width=40).grid(row=0, column=1)
-    tk.Label(root, text="Logo Path:").grid(row=1, column=0, sticky="e")
-    tk.Entry(root, textvariable=logo_path_var, width=40).grid(row=1, column=1)
-    tk.Button(root, text="Browse", command=browse_logo).grid(row=1, column=2)
-    tk.Label(root, text="Output Path:").grid(row=2, column=0, sticky="e")
-    tk.Entry(root, textvariable=output_path_var, width=40).grid(row=2, column=1)
-    tk.Button(root, text="Browse", command=browse_output).grid(row=2, column=2)
-    tk.Button(root, text="Generate QR Code", command=generate_qr).grid(row=3, column=1)
-    tk.Label(root, textvariable=status_var).grid(row=4, column=0, columnspan=3)
+    font_label = ("Verdana", 12)
+    font_entry = ("Verdana", 10)
+    font_button = ("Verdana", 10)
+
+    tk.Label(root, text="URL:", font=font_label, bg="white").grid(row=0, column=0, sticky="e", pady=10)
+    tk.Entry(root, textvariable=url_var, width=40, font=font_entry).grid(row=0, column=1, pady=10)
+    tk.Label(root, text="Output Path:", font=font_label, bg="white").grid(row=1, column=0, sticky="e", pady=10)
+    tk.Entry(root, textvariable=output_path_var, width=40, font=font_entry).grid(row=1, column=1, pady=10)
+    
+    browse_button = tk.Button(root, text="Browse", command=browse_output, bg="#43B02A", fg="#fff", font=font_button, relief="flat", padx=12, pady=6)
+    browse_button.grid(row=1, column=2, padx=5, pady=10)
+
+    generate_button = tk.Button(root, text="Generate QR Code", command=generate_qr, bg="#43B02A", fg="#fff", font=font_button, relief="flat", padx=12, pady=6)
+    generate_button.grid(row=2, column=1, pady=20)
+
+    tk.Label(root, textvariable=status_var, bg="white", font=font_label).grid(row=3, column=0, columnspan=3, pady=10)
 
     root.mainloop()
 
