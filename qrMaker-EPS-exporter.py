@@ -1,21 +1,21 @@
 import tkinter as tk
 from tkinter import filedialog
 import qrcode
-from PIL import Image
+from PIL import Image, EpsImagePlugin
 import os
 
 def generate_qr_with_logo(url, logo_path, qr_output_path):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
-        box_size=30,
+        box_size=10,
         border=1,
     )
 
     qr.add_data(url)
     qr.make(fit=True)
 
-    img = qr.make_image(fill_color="black", back_color="white").convert('RGBA')
+    img = qr.make_image(fill_color="black", back_color="white").convert('RGB')
     logo = Image.open(logo_path)
     logo = logo.convert("RGBA")
 
@@ -26,7 +26,9 @@ def generate_qr_with_logo(url, logo_path, qr_output_path):
     logo_position = (qr_size // 2 - logo_size // 2, qr_size // 2 - logo_size // 2)
     img.paste(logo, logo_position, mask=logo)
 
-    img.save(qr_output_path)
+    # Save QR code as an EPS file
+    eps_output_path = os.path.splitext(qr_output_path)[0] + '.eps'
+    img.save(eps_output_path, 'EPS', compression='none', fill_rule='evenodd')
 
 def gui():
     root = tk.Tk()
@@ -37,7 +39,7 @@ def gui():
     root.grid_columnconfigure(2, weight=1)
 
     def browse_output():
-        file_path = filedialog.asksaveasfilename(defaultextension=".png")
+        file_path = filedialog.asksaveasfilename(defaultextension=".eps")
         output_path_var.set(file_path)
 
     def generate_qr():
@@ -75,5 +77,5 @@ def gui():
 
     root.mainloop()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     gui()
